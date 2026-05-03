@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>WEB KELAS VI | Generasi Hebat & Pintar</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fc;
+            color: #1e2a3e;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* LOADING SCREEN */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease;
+            backdrop-filter: blur(2px);
+        }
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #2c3e66;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* LOGIN PAGE FULLSCREEN */
+        .login-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('vi.png') center/cover no-repeat;
+            background-color: #1a2a3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+        .login-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70%;
+            background: linear-gradient(to top, rgba(255,255,255,0.98), rgba(255,255,255,0.5), transparent);
+            pointer-events: none;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            padding: 2rem 2rem 2.5rem;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            z-index: 10;
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: transform 0.2s;
+        }
+        .login-card h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -1px;
+        }
+        .login-card h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin: 0.5rem 0 1rem;
+            color: #0f172a;
+        }
+        .login-card p {
+            color: #334155;
+            margin-bottom: 1.5rem;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 60px;
+            border: 1.5px solid #e2e8f0;
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+        .login-card input:focus {
+            outline: none;
+            border-color: #2c3e66;
+            box-shadow: 0 0 0 3px rgba(44,62,102,0.2);
+        }
+        .login-card button {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 0.9rem;
+            width: 100%;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+        }
+        .login-card button:hover {
+            background: #0f172a;
+            transform: translateY(-2px);
+        }
+        .error-toast {
+            background: #ef4444;
+            color: white;
+            padding: 0.8rem;
+            border-radius: 40px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            animation: fade 0.3s;
+        }
+
+        /* MAIN APP (awal hidden) */
+        .main-app {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        /* NAVBAR MODERN */
+        .navbar {
+            background: white;
+            backdrop-filter: blur(8px);
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            padding: 0.8rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo-area {
+            font-weight: 800;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #2c3e66;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .nav-links a:hover { color: #0f172a; transform: translateY(-2px); }
+        .logout-btn {
+            background: #eef2ff;
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1.8rem 1.2rem;
+        }
+        section {
+            margin-bottom: 4rem;
+        }
+        .hero-header {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), white), url('vi.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 2rem;
+            padding: 3rem 2rem;
+            position: relative;
+            color: #1e293b;
+            margin-bottom: 2rem;
+        }
+        .hero-header h1 { font-size: 2.5rem; font-weight: 800; }
+        .hero-header p { font-size: 1.2rem; opacity: 0.9; }
+
+        /* card statistik */
+        .stats-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            flex: 1 1 180px;
+            text-align: center;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #eef2ff;
+        }
+        .stat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1); }
+        .stat-card i { font-size: 2.5rem; color: #2c3e66; margin-bottom: 0.5rem; }
+
+        /* guru card */
+        .guru-card {
+            background: white;
+            border-radius: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            flex-wrap: wrap;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.05);
+        }
+        .guru-foto {
+            width: 100px;
+            height: 100px;
+            background: #d9e2ef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            background-image: url('woto.png');
+            background-size: cover;
+            background-position: center;
+        }
+        /* siswa grid */
+        .siswa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+        .siswa-card {
+            background: white;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.03);
+            border: 1px solid #edf2f7;
+        }
+        .siswa-card:hover { transform: scale(0.98); background: #fafcff; border-color: #b9c8f0; }
+        .foto-siswa {
+            width: 70px;
+            height: 70px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            margin: 0 auto 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.7rem;
+            background-size: cover;
+            background-position: center;
+            color: #2c3e66;
+        }
+        /* struktur */
+        .struktur-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: #f8fafc;
+            border-radius: 2rem;
+            padding: 1.5rem;
+        }
+        /* galeri grid */
+        .galeri-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        .galeri-item {
+            background: #f1f5f9;
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.2s;
+            aspect-ratio: 1/0.9;
+        }
+        .galeri-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .galeri-item:hover img { transform: scale(1.03); }
+
+        /* video / musik */
+        .video-modern {
+            background: #111;
+            border-radius: 1.5rem;
+            overflow: hidden;
+        }
+        .music-player {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .visualizer {
+            height: 40px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .visualizer span {
+            width: 7px;
+            background: #2c3e66;
+            border-radius: 4px;
+            transition: 0.1s;
+        }
+        /* papan info */
+        .info-board {
+            background: #1e293b;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            color: white;
+        }
+        .board-messages { max-height: 250px; overflow-y: auto; margin-top: 1rem; }
+        .msg-item { background: #334155; margin: 0.5rem 0; padding: 0.7rem; border-radius: 1rem; }
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e293b;
+            color: white;
+            border-radius: 60px;
+            padding: 12px 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 99;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            position: relative;
+        }
+        .modal-content img, .modal-content video { max-width: 100%; max-height: 70vh; border-radius: 1rem; }
+        @media (max-width: 640px) {
+            .hero-header h1 { font-size: 1.8rem; }
+            .navbar { flex-direction: column; gap: 10px; }
+        }
+        button, .siswa-card, .logout-btn, .stat-card { cursor: pointer; }
+        footer { text-align: center; padding: 2rem; color: #64748b; }
+    </style>
+</head>
+<body>
+
+<div class="loading-screen" id="loading">
+    <div class="loader"></div>
+</div>
+
+<!-- HALAMAN LOGIN -->
+<div class="login-page" id="loginPage">
+    <div class="login-overlay"></div>
+    <div class="login-card">
+        <h1>VI</h1>
+        <h2>Selamat Datang di Web Kelas VI</h2>
+        <p>Generasi Hebat dan Pintar</p>
+        <input type="text" id="namaInput" placeholder="Masukkan nama kamu" autocomplete="off">
+        <button id="masukBtn">MASUK</button>
+        <div id="loginError" style="min-height: 50px;"></div>
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="main-app" id="mainApp">
+    <div class="navbar">
+        <div class="logo-area"><i class="fas fa-graduation-cap"></i> WEB KELAS VI</div>
+        <div class="nav-links">
+            <a href="#home">Beranda</a>
+            <a href="#absen">Absen</a>
+            <a href="#struktur">Struktur</a>
+            <a href="#galeri-foto">Galeri</a>
+            <a href="#video">Video</a>
+            <a href="#music">Musik</a>
+            <a href="#papaninfo">Info</a>
+        </div>
+        <div class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Keluar</div>
+    </div>
+
+    <div class="container">
+        <!-- hero -->
+        <section id="home">
+            <div class="hero-header">
+                <h1>KELAS VI</h1>
+                <p>Generasi Hebat dan Pintar</p>
+            </div>
+        </section>
+
+        <!-- STATISTIK 3 card -->
+        <div class="stats-grid">
+            <div class="stat-card"><i class="fas fa-users"></i><h3>25 Siswa</h3><p>Anggota kelas</p></div>
+            <div class="stat-card"><i class="fas fa-trophy"></i><h3>16 Piala</h3><p>Prestasi</p></div>
+            <div class="stat-card"><i class="fas fa-brain"></i><h3>116</h3><p>IQ Rata-rata</p></div>
+        </div>
+
+        <!-- GURU -->
+        <section style="margin-top: 2rem;">
+            <div class="guru-card">
+                <div class="guru-foto" style="background-image: url('woto.png'); background-size: cover;"></div>
+                <div><h2>Pak Woto</h2><p style="color:#475569;">Wali Kelas Terbaik ⭐ Inspiratif</p></div>
+            </div>
+        </section>
+
+        <!-- ABSEN SISWA GRID -->
+        <section id="absen">
+            <h2 style="font-size: 1.8rem; margin-bottom: 1rem;"><i class="fas fa-clipboard-list"></i> Absen Siswa</h2>
+            <div class="siswa-grid" id="siswaGrid"></div>
+        </section>
+
+        <!-- STRUKTUR ORGANISASI -->
+        <section id="struktur">
+            <h2><i class="fas fa-sitemap"></i> Struktur Organisasi</h2>
+            <div class="struktur-grid">
+                <div><strong>👨‍🏫 Guru:</strong> Pak Woto</div>
+                <div><strong>👨‍🎓 Ketua kelas:</strong> Vito</div>
+                <div><strong>👩‍🎓 Wakil ketua:</strong> Aura</div>
+                <div><strong>📝 Sekretaris:</strong> Mahira</div>
+                <div><strong>📋 Wakil sekretaris:</strong> Eza</div>
+                <div><strong>💰 Bendahara:</strong> Ayunda</div>
+                <div><strong>🤝 Wakil bendahara:</strong> Askana</div>
+            </div>
+        </section>
+
+        <!-- GALERI FOTO -->
+        <section id="galeri-foto">
+            <h2><i class="fas fa-images"></i> Galeri Kenangan Kelas VI</h2>
+            <div class="galeri-grid" id="galeriFotoGrid"></div>
+        </section>
+
+        <!-- GALERI VIDEO -->
+        <section id="video">
+            <h2><i class="fas fa-video"></i> Video Kenangan Kelas VI</h2>
+            <div class="video-modern" style="padding: 0.5rem; background:#000; border-radius:1.5rem;">
+                <video id="trenVideo" width="100%" controls style="border-radius:1.2rem;">
+                    <source src="tren.mp4" type="video/mp4">
+                    Your browser tidak support video. (fallback: demo video)
+                </video>
+                <div style="display: flex; gap: 10px; padding: 10px; justify-content:center;">
+                    <button id="fullscreenVideoBtn" style="background:#2c3e66; color:white; border:none; padding:6px 12px; border-radius:30px;"><i class="fas fa-expand"></i> Fullscreen</button>
+                    <button id="modalVideoBtn" style="background:#1e293b; color:white; border:none; padding:6px 12px; border-radius:30px;"><i class="fas fa-window-maximize"></i> Popup Modal</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PEMUTAR LAGU -->
+        <section id="music">
+            <h2><i class="fas fa-music"></i> Musik Kelas VI</h2>
+            <div class="music-player">
+                <div><strong>🎵 Lagu: Musik Kelas VI</strong></div>
+                <audio id="audioPlayer" src="musik.mp3" preload="auto"></audio>
+                <div class="visualizer" id="visualizer"></div>
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items:center;">
+                    <button id="playPauseBtn" style="background:#1e293b; color:white; border:none; padding:8px 18px; border-radius:40px;"><i class="fas fa-play"></i> Play</button>
+                    <input type="range" id="progressBar" value="0" step="0.01" style="flex:3">
+                    <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.7">
+                    <span><i class="fas fa-volume-up"></i></span>
+                </div>
+                <div style="font-size:0.8rem; margin-top:5px;">🎧 Nostalgia Kelas VI</div>
+            </div>
+        </section>
+
+        <!-- PAPAN INFORMASI -->
+        <section id="papaninfo">
+            <h2><i class="fas fa-chalkboard"></i> Papan Informasi</h2>
+            <div class="info-board">
+                <textarea id="infoText" rows="2" placeholder="Tulis pengumuman / info menarik ..." style="width:100%; border-radius:1rem; padding:0.8rem; border:none;"></textarea>
+                <button id="postInfoBtn" style="margin-top:10px; background:#facc15; color:#1e293b; font-weight:bold; border:none; padding:0.6rem; width:100%; border-radius:40px;"><i class="fas fa-paper-plane"></i> Kirim Info</button>
+                <div class="board-messages" id="boardMessagesList"></div>
+            </div>
+        </section>
+        <footer>© 2025 Kelas VI - Generasi Hebat & Pintar</footer>
+    </div>
+    <div class="scroll-top" id="scrollTop"><i class="fas fa-arrow-up"></i></div>
+</div>
+
+<!-- Modal umum -->
+<div id="globalModal" class="modal"><div class="modal-content" id="modalContent"></div></div>
+
+<script>
+    // Data absen 25 siswa
+    const daftarSiswa = [
+        "afif","irfan","aisyah","alfa","aqila","arjun","askana","runa","ayudia","ayunda",
+        "dimas","ega","vito","eza","fadil","tata","jafar","khaira","aan","mahira",
+        "faqih","aura","tama","nafisa","sasi"
+    ];
+    // hobi random pool
+    const hobiesPool = ["Membaca","Sepak Bola","Melukis","Coding","Menari","Bernyanyi","Fotografi","Robotik","Basket","Renang","Gaming","Menulis"];
+    function randomHobi() { return hobiesPool[Math.floor(Math.random() * hobiesPool.length)]; }
+    
+    let currentUser = null;
+    // daftar foto galeri (nama file)
+    const galeriFotoFiles = ["Batio.png","Tka1.png","Tka2.png","Candi.png","C.png","Batik2.png"];
+    
+    // --- Helper: notification + vibrate ---
+    async function requestPermissions() {
+        if (Notification.permission !== "granted") await Notification.requestPermission();
+        if (navigator.vibrate) navigator.vibrate(200);
+        // audio autoplay after login
+        const audio = document.getElementById('audioPlayer');
+        if(audio) { audio.play().catch(e=>console.log("autoplay need interaction")); }
+    }
+    function notifyBrowser(title, body) {
+        if (Notification.permission === "granted") new Notification(title, { body });
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        // bunyi beep (opsional)
+        const beep = new Audio("data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==");
+        beep.play().catch(e=>{});
+    }
+    
+    // render siswa grid
+    function renderSiswaGrid() {
+        const grid = document.getElementById('siswaGrid');
+        grid.innerHTML = '';
+        daftarSiswa.forEach((nama, idx) => {
+            const no = idx+1;
+            const card = document.createElement('div');
+            card.className = 'siswa-card';
+            const initial = nama.substring(0,2).toUpperCase();
+            card.innerHTML = `
+                <div class="foto-siswa" style="background: #cbd5e1; background-image: url('${nama}.png'); background-size: cover; background-position:center; color:black;"><span style="display:${nama}? block: none;">${!localStorage.getItem(`${nama}_img_exists`) ? initial : ''}</span></div>
+                <div><strong>${no}. ${nama.charAt(0).toUpperCase()+nama.slice(1)}</strong></div>
+            `;
+            card.addEventListener('click', () => {
+                const hobiRandom = randomHobi();
+                const modalContent = `
+                    <div style="text-align:center; padding:0.8rem;">
+                        <div class="foto-siswa" style="width:100px; height:100px; margin:0 auto; background-image:url('${nama}.png'); background-size:cover; background:#e2e8f0; display:flex; align-items:center; justify-content:center;">${initial}</div>
+                        <h3>${nama.charAt(0).toUpperCase()+nama.slice(1)}</h3>
+                        <p>📆 Umur: 12 tahun</p>
+                        <p>❤️ Hobi: ${hobiRandom}</p>
+                        <p>🔢 Nomor absen: ${no}</p>
+                        <button id="closeModalBtn" style="margin-top:1rem; background:#1e293b; color:white; border:none; padding:6px 20px; border-radius:40px;">Tutup</button>
+                    </div>
+                `;
+                document.getElementById('modalContent').innerHTML = modalContent;
+                const modal = document.getElementById('globalModal');
+                modal.classList.add('active');
+                document.getElementById('closeModalBtn').addEventListener('click', ()=> modal.classList.remove('active'));
+            });
+            grid.appendChild(card);
+        });
+    }
+    
+    // galeri foto dan modal zoom
+    function renderGaleri() {
+        const galeriContainer = document.getElementById('galeriFotoGrid');
+        galeriContainer.innerHTML = '';
+        galeriFotoFiles.forEach(file => {
+            const div = document.createElement('div');
+            div.className = 'galeri-item';
+            div.innerHTML = `<img src="${file}" alt="${file}" onerror="this.src='https://placehold.co/400x300?text=${file}'">`;
+            div.addEventListener('click', () => {
+                const modalDiv = document.getElementById('modalContent');
+                modalDiv.innerHTML = `<img src="${file}" onerror="this.src='https://placehold.co/800x600?text=${file}'" style="max-width:90vw;max-height:80vh;"><br><button id="closeModalBtn2" style="margin-top:10px;">Tutup</button>`;
+                const modal = document.getElementById('globalModal');
+                modal.classList.add('active');
+                document.getElementById('closeModalBtn2').addEventListener('click',()=> modal.classList.remove('active'));
+            });
+            galeriContainer.appendChild(div);
+        });
+    }
+    
+    // papan info dengan localStorage, notifikasi
+    let lastMsgCount = 0;
+    function loadBoardMessages() {
+        const messages = JSON.parse(localStorage.getItem('kelasVI_board') || '[]');
+        const container = document.getElementById('boardMessagesList');
+        container.innerHTML = '';
+        messages.slice().reverse().forEach(msg => {
+            const div = document.createElement('div');
+            div.className = 'msg-item';
+            div.innerHTML = `<strong>${msg.author}</strong> <small>${new Date(msg.timestamp).toLocaleString()}</small><br>${msg.text}`;
+            container.appendChild(div);
+        });
+        if(messages.length !== lastMsgCount && messages.length > 0 && lastMsgCount !==0){
+            notifyBrowser('Info Baru di Papan Kelas', 'Ada pengumuman terbaru!');
+        }
+        lastMsgCount = messages.length;
+    }
+    function postNewMessage(text, author) {
+        if(!text.trim()) return;
+        const messages = JSON.parse(localStorage.getItem('kelasVI_board') || '[]');
+        messages.push({ text: text.trim(), author: author, timestamp: Date.now() });
+        localStorage.setItem('kelasVI_board', JSON.stringify(messages));
+        loadBoardMessages();
+        notifyBrowser(`${author} menambahkan info`, text.substring(0,60));
+        if (navigator.vibrate) navigator.vibrate(100);
+        // bunyi trigger
+        const beepAudio = new Audio("data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==");
+        beepAudio.play().catch(e=>{});
+    }
+    
+    // music visualizer & player interactions
+    let audioCtx, source, analyser, isAudioSetup=false;
+    function setupAudioVisualizer() {
+        const audio = document.getElementById('audioPlayer');
+        if(!audioCtx && audio) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 64;
+            source = audioCtx.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+            isAudioSetup = true;
+            animateVisualizer();
+        }
+    }
+    function animateVisualizer() {
+        if(!analyser) return;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        const visualizerDiv = document.getElementById('visualizer');
+        function draw() {
+            if(!visualizerDiv) return;
+            analyser.getByteFrequencyData(dataArray);
+            let bars = '';
+            const avg = dataArray.slice(0,10).reduce((a,b)=>a+b,0)/10;
+            const heightFactor = Math.min(30, 10 + avg/15);
+            for(let i=0;i<16;i++) {
+                const h = (dataArray[i]||0)/2;
+                bars += `<span style="height:${Math.max(5, h/3)}px; width:6px; background:#2c5f8a;"></span>`;
+            }
+            visualizerDiv.innerHTML = bars || '<span style="height:6px;"></span>';
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+    
+    // login handler
+    const loginPage = document.getElementById('loginPage');
+    const mainApp = document.getElementById('mainApp');
+    const masukBtn = document.getElementById('masukBtn');
+    const namaInput = document.getElementById('namaInput');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    function normalize(str) { return str.trim().toLowerCase(); }
+    function checkLoginAndGo() {
+        let inputNama = normalize(namaInput.value);
+        if(daftarSiswa.includes(inputNama)) {
+            currentUser = inputNama;
+            localStorage.setItem('kelasVI_user', currentUser);
+            localStorage.setItem('kelasVI_logged', 'true');
+            // izin notifikasi & getar
+            requestPermissions();
+            // autoplay musik
+            setTimeout(()=>{
+                const aud = document.getElementById('audioPlayer');
+                if(aud) { aud.play().catch(e=>console.log); }
+                if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            }, 200);
+            loginPage.style.opacity = '0';
+            setTimeout(()=>{ loginPage.style.display = 'none'; mainApp.style.display = 'block'; setTimeout(()=>mainApp.style.opacity=1,20); },300);
+            document.getElementById('loginError').innerHTML = '';
+        } else {
+            document.getElementById('loginError').innerHTML = '<div class="error-toast"><i class="fas fa-exclamation-circle"></i> Nama tidak terdaftar di kelas VI</div>';
+            setTimeout(()=>{if(document.getElementById('loginError')) document.getElementById('loginError').innerHTML='';},2000);
+        }
+    }
+    
+    // check localstorage login
+    function checkAutoLogin() {
+        const logged = localStorage.getItem('kelasVI_logged');
+        const savedUser = localStorage.getItem('kelasVI_user');
+        if(logged === 'true' && savedUser && daftarSiswa.includes(savedUser)) {
+            currentUser = savedUser;
+            loginPage.style.display = 'none';
+            mainApp.style.display = 'block';
+            mainApp.style.opacity = 1;
+            requestPermissions();
+            return true;
+        }
+        return false;
+    }
+    
+    // Event & initial
+    window.addEventListener('load', () => {
+        setTimeout(()=>{ document.getElementById('loading').style.opacity='0'; setTimeout(()=>document.getElementById('loading').style.display='none',500); },600);
+        renderSiswaGrid();
+        renderGaleri();
+        loadBoardMessages();
+        const storedMessages = JSON.parse(localStorage.getItem('kelasVI_board') || '[]');
+        lastMsgCount = storedMessages.length;
+        // post info button
+        document.getElementById('postInfoBtn').addEventListener('click',()=>{
+            const text = document.getElementById('infoText').value;
+            if(text && currentUser) { postNewMessage(text, currentUser.charAt(0).toUpperCase()+currentUser.slice(1)); document.getElementById('infoText').value='';}
+            else alert("Tulis pesan terlebih dahulu");
+        });
+        // video fullscreen
+        const video = document.getElementById('trenVideo');
+        document.getElementById('fullscreenVideoBtn').addEventListener('click',()=>{ if(video.requestFullscreen) video.requestFullscreen(); });
+        document.getElementById('modalVideoBtn').addEventListener('click',()=>{
+            const modalDiv = document.getElementById('modalContent');
+            modalDiv.innerHTML = `<video controls autoplay style="width:90vw; max-width:800px;"><source src="tren.mp4" type="video/mp4"></video><button id="closeModalBtnVid" style="margin-top:10px;">Tutup</button>`;
+            const modal = document.getElementById('globalModal');
+            modal.classList.add('active');
+            document.getElementById('closeModalBtnVid').onclick = ()=> modal.classList.remove('active');
+        });
+        // music control
+        const audioEl = document.getElementById('audioPlayer');
+        const playBtn = document.getElementById('playPauseBtn');
+        const progBar = document.getElementById('progressBar');
+        const volControl = document.getElementById('volumeControl');
+        
+        playBtn.addEventListener('click',()=>{
+            if(audioEl.paused) { audioEl.play(); playBtn.innerHTML='<i class="fas fa-pause"></i> Pause'; }
+            else { audioEl.pause(); playBtn.innerHTML='<i class="fas fa-play"></i> Play'; }
+            if(!isAudioSetup && audioEl.src) setupAudioVisualizer();
+            if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        });
+        audioEl.addEventListener('timeupdate',()=>{ if(audioEl.duration) progBar.value = audioEl.currentTime/audioEl.duration; });
+        progBar.addEventListener('input',()=>{ audioEl.currentTime = progBar.value * audioEl.duration; });
+        volControl.addEventListener('input',()=>{ audioEl.volume = volControl.value; });
+        audioEl.addEventListener('play',()=>{ if(!isAudioSetup) setupAudioVisualizer(); });
+        // Scroll top
+        document.getElementById('scrollTop').addEventListener('click',()=> window.scrollTo({top:0,behavior:'smooth'}));
+        // logout
+        logoutBtn.addEventListener('click',()=>{
+            localStorage.removeItem('kelasVI_logged');
+            localStorage.removeItem('kelasVI_user');
+            location.reload();
+        });
+        masukBtn.addEventListener('click', checkLoginAndGo);
+        if(!checkAutoLogin()) {
+            loginPage.style.display = 'flex';
+            mainApp.style.display = 'none';
+        }
+        window.addEventListener('storage', (e) => { if(e.key === 'kelasVI_board') loadBoardMessages(); });
+    });
+</script>
+</body>
+</html>
